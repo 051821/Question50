@@ -1,0 +1,18 @@
+services:
+  recommender:
+    build: . 
+    image: fraud_detector:latest
+    container_name: fraud-container
+    ports:
+      - "5555:5555"  # Jupyter Notebook port
+    volumes:
+      - .:/app1  
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: ["jupyter", "notebook", "--ip=0.0.0.0", "--port=5555", "--no-browser", "--allow-root", "--NotebookApp.token=''"]
+    networks:
+      - recommender-network
+
+networks:
+  recommender-network:
+    driver: bridge

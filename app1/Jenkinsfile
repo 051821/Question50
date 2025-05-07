@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    environment {
+        REPO_URL = 'https://github.com/051821/Question50'
+        BRANCH = 'main'
+        DOCKER_COMPOSE_FILE = 'app1/docker-compose.yml'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: "${BRANCH}", url: "${REPO_URL}"
+            }
+        }
+
+        stage('Verify Docker Compose File Exists') {
+            steps {
+                bat 'dir app1'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                bat "docker compose -f ${DOCKER_COMPOSE_FILE} build"
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                bat "docker compose -f ${DOCKER_COMPOSE_FILE} up -d"
+            }
+        }
+
+        stage('List Running Containers') {
+            steps {
+                bat 'docker ps'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo '✅ CI/CD Pipeline execution completed.'
+        }
+    }
+}
